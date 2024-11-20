@@ -9,7 +9,7 @@ With this scripts you can set up an experiment where participants will be able t
 
 ### Psychopy Setup
 
-download the lates [Psychopy](https://www.psychopy.org/download.html) in the current itteration we use version 2022.2.5
+download the lates [Psychopy](https://www.psychopy.org/download.html) in the current iteration we use version 2022.2.5
 
 ### get the rt-PyProject
 
