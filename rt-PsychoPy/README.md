@@ -3,13 +3,13 @@
 
 This is the example real-time Psychopy Project (rt-PsychoPy) to set up a neurofeedback experiment
 
-## Continuos Network based Neurofeedback
+## balltask: Continuos Network based Neurofeedback
 
-With this scripts you can set up an experiment where participants will be able to modulate brain activity from 1-7 brain networks while receiving continuous feedback on a display.
+With this scripts you can set up an experiment where participants will be able to modulate brain activity from 2 brain networks while receiving continuous feedback on a display. In the current version participants will receive feedback from the positive diametric activity (PDA) from default mode network (DMN) and central executive network (CEN).
 
 ### Psychopy Setup
 
-download the lates [Psychopy](https://www.psychopy.org/download.html)
+download the lates [Psychopy](https://www.psychopy.org/download.html) in the current itteration we use version 2022.2.5
 
 ### get the rt-PyProject
 
