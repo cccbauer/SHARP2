@@ -5,11 +5,11 @@ The Shanghai At Risk for Psychosis 2 (SHARP) study is a multi-site research effo
 
 This repo contains scripts for:
 
-* Running MURFI: [murfi-rt-PyProject](murfi-rt-PyProject)
+* Running MURFI: [murfi-rt-PyProject](https://github.com/cccbauer/SHARP2/tree/main/murfi-rt-Pyproject/scripts)
 * Running ball task for real-time feedback: [rt-PsychoPy](https://github.com/cccbauer/SHARP2/tree/main/rt-PsychoPy)
 
 ### Running a real-time Neurofeedback
 
-Example Network-Based neurofeedback run [balltask](https://github.com/cccbauer/sharp2/tree/main/rt-Psychopy/balltask)
+Example Network-Based neurofeedback run [balltask](https://github.com/cccbauer/SHARP2/tree/main/murfi-rt-Pyproject/scripts/balltask)
 
-Example Network Based Experience Sampling: [experiencesampling](https://github.com/cccbauer/sharp2/tree/main/rt-Psychopy/experiencesampling)
+Example Network Based Experience Sampling: [experiencesampling](https://github.com/cccbauer/SHARP2/tree/main/murfi-rt-Pyproject/scripts/experiencesampling)
