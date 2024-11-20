@@ -6,7 +6,7 @@ The Shanghai At Risk for Psychosis 2 (SHARP) study is a multi-site research effo
 This repo contains scripts for:
 
 * Running MURFI: [murfi-rt-PyProject](murfi-rt-PyProject)
-* Running ball task for real-time feedback: [rt-PsychoPy](https://github.com/cccbauer/SHARP2/main/rt-Psychopy)
+* Running ball task for real-time feedback: [rt-PsychoPy](https://github.com/cccbauer/SHARP2/tree/main/rt-PsychoPy)
 
 ### Running a real-time Neurofeedback
 
