@@ -10,6 +10,6 @@ This repo contains scripts for:
 
 ### Running a real-time Neurofeedback
 
-Example Network-Based neurofeedback run [balltask](https://github.com/cccbauer/SHARP2/tree/main/murfi-rt-Pyproject/scripts/balltask)
+Example Network-Based neurofeedback run [balltask](https://github.com/cccbauer/SHARP2/tree/main/rt-PsychoPy/balltask)
 
 Example Network Based Experience Sampling: [experiencesampling](https://github.com/cccbauer/SHARP2/tree/main/murfi-rt-Pyproject/scripts/experiencesampling)
