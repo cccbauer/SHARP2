@@ -6,6 +6,8 @@
 
 ## 4 ARGS: [subid] [ses] [run] [step]
 
+export FSLOUTPUTTYPE=NIFTI
+
 #Step 1: disable wireless internet, set MURFI_SUBJECTS_DIR, and NAMEcd
 #Step 2: receive 2 volume scan
 #Step 3: create masks
@@ -51,8 +53,8 @@ then
 	#ifdown wlan0
 	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "checking the presence of scanner and stim computer"
-	#ping -c 3 192.168.2.1
-	#ping -c 3 192.168.2.6
+	ping -c 3 192.168.2.1
+	ping -c 3 192.168.2.6
 	echo "make sure Wi-Fi is off"
 	echo "make sure you are Wired Connected to rt-fMRI"
 	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -635,6 +637,122 @@ then
 
     
 fi
+
+
+
+# ONLY if regular mask generation isn't possible
+# As a backup, we can register the template masks to 2vol space
+if [ ${step} = backup_register_mni_masks ]
+then
+    clear
+    rm -r $subj_dir/xfm/epi2reg
+    mkdir -p $subj_dir/xfm/epi2reg
+    mni_template=MNI152_T1_2mm_LPS_brain.nii.gz
+    dmn_mni=DMNax_brainmaskero2_lps.nii.gz
+    cen_mni=CENa_brainmaskero2_lps.nii.gz
+    smcr_mni=SMCra_brainmaskero2_lps.nii
+    smcl_mni=SMCla_brainmaskero2_lps.nii
+
+
+    two_vol_ref_bet=${subj_dir}/xfm/two_vol_ref_bet.nii
+    two_vol_ref2mni=${subj_dir}/xfm/two_vol_ref2mni.nii
+    two_vol_ref2mni_mat=${subj_dir}/xfm/two_vol_ref2mni.mat
+    mni2_two_vol_ref_mat=${subj_dir}/xfm/mni2_two_vol_ref.mat
+
+
+    latest_ref=$(ls -t $subj_dir/xfm/series*_ref.nii | head -n1)
+    latest_ref="${latest_ref::-4}"
+    study_ref=${subj_dir}/xfm/study_ref.nii
+
+    # if localizer_ref images doesn't exist yet, make it
+    if [ ! -f ${subj_dir}/xfm/localizer_ref.nii ]
+    then
+        mv ${study_ref} ${subj_dir}/xfm/localizer_ref.nii
+    fi
+    echo "Registering MNIII masks to reference image from most recent series: ${latest_ref}"
+    echo "study_ref.nii is now ${latest_ref}"
+
+    # Move the latest reference image to be study_ref
+    # study_ref.nii is used by MURFI to register to 1st volume of feedback runs
+    # So ROI masks need to be in the same space as study_ref.nii
+    cp ${latest_ref}.nii ${study_ref}
+
+    bet ${latest_ref} ${latest_ref}_brain -R -f 0.4 -g 0 -m # changed from -f 0.6
+    slices ${latest_ref} ${latest_ref}_brain_mask -o $subj_dir/qc/2vol_skullstrip_brain_mask_check.gif
+
+
+    # # warp masks in MNI space into 2VOL native space (studyref)
+    examplefunc=${latest_ref}_brain.nii
+    flirt -in $examplefunc -ref ${latest_ref}_brain -out $subj_dir/xfm/epi2reg/rest2studyref_brain -omat $subj_dir/xfm/epi2reg/rest2studyref.mat
+
+    # make registration image for inspection, and open it
+    slices $subj_dir/xfm/epi2reg/rest2studyref_brain ${latest_ref}_brain -o $subj_dir/qc/rest_warp_to_2vol_native_check.gif
+
+    # first, register the 2vol to mni
+    # then calculate the inverse of the registration
+    flirt -in ${latest_ref}_brain.nii -ref ${mni_template} -out ${two_vol_ref2mni} -omat ${two_vol_ref2mni_mat}
+    convert_xfm -omat ${mni2_two_vol_ref_mat} -inverse ${two_vol_ref2mni_mat}
+
+
+    # "apply" the inverse of the registration to dmn/cen masks
+    #put them in the participant mask folder
+
+    #DMN
+    flirt -in ${dmn_mni} -ref ${latest_ref}_brain -out $subj_dir/mask/dmn.nii -init ${mni2_two_vol_ref_mat} -applyxfm -interp nearestneighbour -datatype short
+
+    #CEN
+    flirt -in ${cen_mni} -ref ${latest_ref}_brain -out $subj_dir/mask/cen.nii -init ${mni2_two_vol_ref_mat} -applyxfm -interp nearestneighbour -datatype short
+
+    #SMCR
+    flirt -in ${smcr_mni} -ref ${latest_ref}_brain -out $subj_dir/mask/smcr.nii -init ${mni2_two_vol_ref_mat} -applyxfm -interp nearestneighbour -datatype short
+
+    #SMCL
+    flirt -in ${smcl_mni} -ref ${latest_ref}_brain -out $subj_dir/mask/smcl.nii -init ${mni2_two_vol_ref_mat} -applyxfm -interp nearestneighbour -datatype short
+
+
+    # This step moves the appropiate masks A & B to be used for feedbck depending on group asignment (i.e. dmn & cen for real and smcl and smcr for sham)
+    # Now, check the content of the rct.txt file
+    # Check if rct.txt contains "1" or "0"
+    #clear
+    # Randomization of masks
+
+    current_path=$(pwd)
+    awk -v subject="$subj" -v rct_value="$subj_dir/xml/rct/rct.txt" \
+    '$1 == subject {print $2 > rct_value}' "$current_path/RCT/randomization.tsv"
+
+    # Read the value from the rct.txt file
+    rct_value=$(cat "$subj_dir/xml/rct/rct.txt")
+
+    
+    if [ "$rct_value" = "1" ]; then
+        # If the content is 1, perform the file renaming
+        cp "$subj_dir/mask/dmn.nii" "$subj_dir/mask/A.nii"
+        cp "$subj_dir/mask/cen.nii" "$subj_dir/mask/B.nii"
+        echo "Randomization applied to masks for subject $subj"
+        
+    elif [ "$rct_value" = "0" ]; then
+        # If the content is 0, perform a different file renaming
+        cp "$subj_dir/mask/smcr.nii" "$subj_dir/mask/A.nii"
+        cp "$subj_dir/mask/smcl.nii" "$subj_dir/mask/B.nii"
+        echo "Randomization applied to masks for subject $subj"
+
+    else
+        
+        # If rct.txt is empty or contains any other value, prompt for input using zenity
+        input_string=$(zenity --forms --title="No valid randomization assignment found" \
+        --separator=" " \
+        --text="No valid randomization assignment found for ${subj}.\n\nPlease add it to \"$current_path/RCT/randomization.tsv\"\n and run this step again." \
+        --cancel-label="Exit" --ok-label="Continue")
+        bash launch_murfi_smc.sh
+    fi
+    echo "+ INSPECT"
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    xdg-open $subj_dir/qc/rest_warp_to_2vol_native_check.gif
+    echo fsleyes ${latest_ref}_brain  $subj_dir/xfm/epi2reg/rest2studyref_brain $subj_dir/mask/cen.nii -cm red $subj_dir/mask/dmn.nii -cm blue  $subj_dir/mask/smcl.nii -cm yellow $subj_dir/mask/smcr.nii -cm green
+fi
+
+
+
 
 
 

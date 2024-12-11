@@ -27,10 +27,10 @@ then
 	mkdir ${subject_dir}$subject/img
 	mkdir ${subject_dir}$subject/log
 	mkdir ${subject_dir}$subject/mask
-	mkdir ${subject_dir}$subject/mask/mni
+	mkdir -p ${subject_dir}$subject/mask/mni
 	mkdir ${subject_dir}$subject/xfm
 	mkdir ${subject_dir}$subject/xml
-	mkdir ${subject_dir}$subject/xml/rct
+	mkdir -p ${subject_dir}$subject/xml/rct
 	mkdir ${subject_dir}$subject/rest
 	mkdir ${subject_dir}$subject/fsfs
 	mkdir ${subject_dir}$subject/qc # DP ADD 4/12/23
@@ -38,6 +38,7 @@ then
 	echo "created all directories for "$subject
 	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	cp ${subject_dir}template/xml/xml_orig/* ${subject_dir}$subject/xml/
+	cp ${subject_dir}template/mask/mni/* ${subject_dir}$subject/mask/mni/
 	awk -v subject="$subject" '$1 == subject {print $2 > "'${subject_dir}'"subject"/xml/rct/rct.txt"}' "${rct_dir}/randomization.tsv"
 
 

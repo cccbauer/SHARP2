@@ -4,10 +4,10 @@ Open a second terminal and paste this code:
 
 
 To run 2vol 
-singularity exec /home/tosa/singularity-images/murfi.sif  /home/tosa/sharp2/murfi-rt-Pyproject/scripts/servedata_custom_smhc.sh /home/tosa/sharp2/murfi-rt-Pyproject/scripts/img/ 3 2 1300
+singularity exec murfi2.1.sif  /home/rt/SHARP2/murfi-rt-Pyproject/scripts/servedata_custom_smhc.sh /home/rt/SHARP2/murfi-rt-Pyproject/scripts/img/ 3 2 1300
 
 To run transfer of feedback
-singularity exec /home/tosa/singularity-images/murfi.sif  /home/tosa/sharp2/murfi-rt-Pyproject/scripts/servedata_custom_smhc.sh /home/tosa/sharp2/murfi-rt-Pyproject/scripts/img/ 3 150 1300
+singularity exec murfi2.1.sif  /home/rt/SHARP2/murfi-rt-Pyproject/scripts/servedata_custom_smhc.sh /home/rt/SHARP2/murfi-rt-Pyproject/scripts/img/ 3 150 1300
 
 To run experience sampling
-singularity exec /home/tosa/singularity-images/murfi.sif  /home/tosa/sharp2/murfi-rt-Pyproject/scripts/servedata_custom_smhc.sh /home/tosa/sharp2/murfi-rt-Pyproject/scripts/img/ 3 300 1300
+singularity exec murfi2.1.sif  /home/rt/SHARP2/murfi-rt-Pyproject/scripts/servedata_custom_smhc.sh /home/rt/SHARP2/murfi-rt-Pyproject/scripts/img/ 3 300 1300
